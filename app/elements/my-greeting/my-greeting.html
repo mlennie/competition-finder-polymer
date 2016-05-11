@@ -1,0 +1,85 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="my-greeting">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      span,
+      input {
+        @apply(--paper-font-body2);
+      }
+    </style>
+
+    <paper-material elevation="1" style="padding: 20px">
+      <h1 class="page-title" tabindex="-1">Find Competitors</h1>
+      <label for="greeting-input">Business Name: </label>
+      <!-- Listens for "input" event and sets greeting to <input>.value -->
+      <input id="greeting-input" value="{{businessName::input}}">
+      <br/>
+      <br/>
+      <label for="greeting-input">Business Location:</label>
+      <input id="greeting-input" value="{{businessLocation::input}}">
+      <br/>
+      <br/>
+      <button on-click="handleSubmit" id="submit-button">Submit</button>
+      <br/>
+    </paper-material>
+    <br/>
+    <my-list items={{businesses}}></my-list>
+  </template>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'my-greeting',
+
+        properties: {
+          businessName: {
+            type: String,
+            value: 'Pizza Hut',
+            notify: true
+          },
+          businessLocation: {
+            type: String,
+            value: 'New York City',
+            notify: true
+          }
+        },
+        ready: function() {
+        },
+        handleSubmit: function() {
+          var _this = this;
+
+          var data = {
+            business_name: this.businessName,
+            business_location: this.businessLocation
+          };
+
+          $.ajax({
+            url: "http://172.17.0.4:5000/competitors",
+            data: data
+          }).done(function(response) {
+            _this.businesses = response.data;
+          });
+        }
+      });
+    })();
+  </script>
+</dom-module>
